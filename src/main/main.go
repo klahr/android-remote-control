@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os/exec"
 	"strings"
@@ -26,6 +25,7 @@ func (this RequestHandler) initialize() {
 }
 
 func (this RequestHandler) run() {
+	print("Now browse to http://localhost:17001\n")
 	if err := http.ListenAndServe(":17001", http.DefaultServeMux); err != nil {
 		print(err.Error())
 	}
@@ -138,8 +138,6 @@ func (this RequestHandler) connect(w http.ResponseWriter, r *http.Request) {
 		port = "5555"
 	}
 
-	cmd := fmt.Sprintf("adb connect %s:%s", host, port)
-	print(cmd)
 	result, err := exec.Command("adb", "connect", host+":"+port).Output()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

@@ -15,13 +15,14 @@
         }
 
         p {
-            font-family: verdana;
+            font-family: sans-serif;
             font-size: 14px;
             font-weight: bold;
             color: #bbbbbb;
         }
 
         h1 {
+            font-family: sans-serif;
             margin-top: 24px;
             color: #499c54;
         }
