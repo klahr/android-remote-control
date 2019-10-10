@@ -67,7 +67,9 @@
 
 <script type="text/javascript">
     function onTcpMode() {
-        var port = document.getElementById("port").value;
+        var port = document.getElementById("tcp_mode_port").value;
+
+        localStorage.setItem("tcp_mode_port", port);
 
         result.style.color = "white";
         result.innerHTML = "Setting...";
@@ -91,8 +93,11 @@
     }
 
     function onConnect() {
-        var host = document.getElementById("host").value;
-        var port = document.getElementById("port").value;
+        var host = document.getElementById("connect_host").value;
+        var port = document.getElementById("connect_port").value;
+
+        localStorage.setItem("connect_host", host);
+        localStorage.setItem("connect_port", port);
 
         result.style.color = "white";
         result.innerHTML = "Connecting...";
@@ -116,7 +121,9 @@
     }
 
     function onClearData() {
-        var package = document.getElementById("clear_data").value;
+        var package = document.getElementById("clear_data_package").value;
+
+        localStorage.setItem("clear_data_package", package);
 
         result.style.color = "white";
         result.innerHTML = "Clearing data...";
@@ -140,7 +147,9 @@
     }
 
     function onUninstall() {
-        var package = document.getElementById("uninstall").value;
+        var package = document.getElementById("uninstall_package").value;
+
+        localStorage.setItem("uninstall_package", package);
 
         result.style.color = "white";
         result.innerHTML = "Uninstalling...";
@@ -164,7 +173,9 @@
     }
 
     function onStartActivity() {
-        var activity = document.getElementById("activity").value;
+        var activity = document.getElementById("start_activity_activity").value;
+
+        localStorage.setItem("start_activity_activity", activity);
 
         result.style.color = "white";
         result.innerHTML = "Starting activity...";
@@ -255,7 +266,7 @@
                 <input value="localhost" disabled></input>
             </td>
             <td>
-                <input id="port" placeholder="port" value="5555"></input>
+                <input id="tcp_mode_port" placeholder="Port" value="5555"></input>
             </td>
             <td>
                 <button onclick="onTcpMode()">SET</button>
@@ -266,10 +277,10 @@
                 <p>Connect</p>
             </td>
             <td>
-                <input id="host" placeholder="192.168.0.52"></input>
+                <input id="connect_host" placeholder="192.168.0.1"></input>
             </td>
             <td>
-                <input id="port" placeholder="port" value="5555"></input>
+                <input id="connect_port" placeholder="Port" value="5555"></input>
             </td>
             <td>
                 <button onclick="onConnect()">CONNECT</button>
@@ -280,7 +291,7 @@
                 <p>Start activity</p>
             </td>
             <td colspan="2">
-                <input id="activity" placeholder="com.example.app/com.example.app.MainActivity"></input>
+                <input id="start_activity_activity" placeholder="com.example.app/com.example.app.MainActivity"></input>
             </td>
             <td>
                 <button onclick="onStartActivity()">START</button>
@@ -291,7 +302,7 @@
                 <p>Clear data</p>
             </td>
             <td colspan="2">
-                <input id="clear_data" placeholder="com.example.app"></input>
+                <input id="clear_data_package" placeholder="com.example.app"></input>
             </td>
             <td>
                 <button onclick="onClearData()">CLEAR DATA</button>
@@ -302,7 +313,7 @@
                 <p>Uninstall</p>
             </td>
             <td colspan="2">
-                <input id="uninstall" placeholder="com.example.app"></input>
+                <input id="uninstall_package" placeholder="com.example.app"></input>
             </td>
             <td>
                 <button onclick="onUninstall()">UNINSTALL</button>
@@ -339,6 +350,23 @@
 </center>
 
 </body>
+
+<script>
+    if (localStorage.getItem("tcp_mode_port") != null) {
+        document.getElementById("tcp_mode_port").value = localStorage.getItem("tcp_mode_port");
+    }
+    document.getElementById("connect_host").value = localStorage.getItem("connect_host");
+    document.getElementById("connect_port").value = localStorage.getItem("connect_port");
+    document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
+    document.getElementById("clear_data_package").value = localStorage.getItem("clear_data_package");
+    document.getElementById("uninstall_package").value = localStorage.getItem("uninstall_package");
+
+    document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
+    document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
+    document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
+
+</script>
+
 </html>
 
 {{end}}
