@@ -163,6 +163,30 @@
         xhttp.send(); 
     }
 
+    function onStartActivity() {
+        var activity = document.getElementById("activity").value;
+
+        result.style.color = "white";
+        result.innerHTML = "Starting activity...";
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(data) {
+            if (this.readyState == 4) {
+                var result = document.getElementById("result");
+                var json = JSON.parse(this.responseText);
+                if (this.status == 200) {
+                    result.style.color = "#499c54";
+                    result.innerHTML = json.data;
+                } else {
+                    result.style.color = "red";
+                    result.innerHTML = "ERROR: " + json.error;
+                }
+            }
+        };
+        xhttp.open("POST", `/start?activity=${activity}`, true);
+        xhttp.send(); 
+    }
+
     function onInputKeyEvent(keyCode) {
         if (keyCode === null) {
             keyCode = document.getElementById("key_code").value;
@@ -242,13 +266,24 @@
                 <p>Connect</p>
             </td>
             <td>
-                <input id="host" placeholder="host" value="192.168.0.55"></input>
+                <input id="host" placeholder="192.168.0.52"></input>
             </td>
             <td>
                 <input id="port" placeholder="port" value="5555"></input>
             </td>
             <td>
                 <button onclick="onConnect()">CONNECT</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Start activity</p>
+            </td>
+            <td colspan="2">
+                <input id="activity" placeholder="com.example.app/com.example.app.MainActivity"></input>
+            </td>
+            <td>
+                <button onclick="onStartActivity()">START</button>
             </td>
         </tr>
         <tr>

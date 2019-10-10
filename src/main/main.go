@@ -22,6 +22,7 @@ func (this RequestHandler) initialize() {
 	http.HandleFunc("/uninstall", this.uninstall)
 	http.HandleFunc("/input_key_event", this.inputKeyEvent)
 	http.HandleFunc("/set_tcp_mode", this.setTcpMode)
+	http.HandleFunc("/start", this.start)
 }
 
 func (this RequestHandler) run() {
@@ -172,6 +173,30 @@ func (this RequestHandler) setTcpMode(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("{\"error\":\"" + strings.Trim(string(result), "\n") + "\"}"))
+	}
+}
+
+func (this RequestHandler) start(w http.ResponseWriter, r *http.Request) {
+	activity := r.URL.Query().Get("activity")
+
+	if activity == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"error\":\"missing 'activity'\"}"))
+		return
+	}
+
+	result, err := exec.Command("adb", "shell", "am", "start", "-n", activity).Output()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"error\":\"" + err.Error() + "\"}"))
+		return
+	}
+
+	if !strings.Contains(string(result), "Error") {
+		w.Write([]byte("{\"data\":\"Activity started!\"}"))
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"error\":\"Failed to start activity.\"}"))
 	}
 }
 
