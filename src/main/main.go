@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 	"text/template"
@@ -17,12 +18,14 @@ func (this RequestHandler) initialize() {
 	this.mTemplates, _ = template.ParseFiles("index.gtpl")
 
 	http.HandleFunc("/", this.index)
+	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("img/"))))
 	http.HandleFunc("/connect", this.connect)
 	http.HandleFunc("/clear_data", this.clearData)
 	http.HandleFunc("/uninstall", this.uninstall)
 	http.HandleFunc("/input_key_event", this.inputKeyEvent)
 	http.HandleFunc("/set_tcp_mode", this.setTcpMode)
 	http.HandleFunc("/start", this.start)
+	http.HandleFunc("/screenshot", this.screenshot)
 }
 
 func (this RequestHandler) run() {
@@ -100,6 +103,20 @@ func (this RequestHandler) uninstall(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("{\"error\":\"Failed to uninstall app.\"}"))
 	}
+}
+
+func (this RequestHandler) screenshot(w http.ResponseWriter, r *http.Request) {
+	_, err := exec.Command("adb", "shell", "screencap", "-p", "/sdcard/screenshot.png").Output()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"error\":\"" + err.Error() + "\"}"))
+		return
+	}
+	exec.Command("adb", "pull", "/sdcard/screenshot.png").Output()
+	exec.Command("adb", "shell", "rm", "/sdcard/screenshot.png").Output()
+	os.Rename("./screenshot.png", "./img/screenshot.png")
+
+	w.Write([]byte("{\"data\":\"Screenshot captured!\"}"))
 }
 
 func (this RequestHandler) inputKeyEvent(w http.ResponseWriter, r *http.Request) {

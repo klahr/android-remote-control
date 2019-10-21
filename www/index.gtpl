@@ -198,6 +198,30 @@
         xhttp.send(); 
     }
 
+    function onScreenshot() {
+        result.style.color = "white";
+        result.innerHTML = "Capturing screenshot...";
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(data) {
+            if (this.readyState == 4) {
+                var result = document.getElementById("result");
+                var json = JSON.parse(this.responseText);
+                if (this.status == 200) {
+                    result.style.color = "#499c54";
+                    result.innerHTML = json.data;
+                    document.getElementById("image_result").style.display = "block";
+                    document.getElementById("image_result").src = "img/screenshot.png?t=" + new Date().getTime();
+                } else {
+                    result.style.color = "red";
+                    result.innerHTML = "ERROR: " + json.error;
+                }
+            }
+        };
+        xhttp.open("POST", `/screenshot`, true);
+        xhttp.send(); 
+    }
+
     function onInputKeyEvent(keyCode) {
         if (keyCode === null) {
             keyCode = document.getElementById("key_code").value;
@@ -320,6 +344,14 @@
             </td>
         </tr>
         <tr>
+            <td colspan="3">
+                <p>Screenshot</p>
+            </td>
+            <td>
+                <button onclick="onScreenshot()">CAPTURE</button>
+            </td>
+        </tr>
+        <tr>
             <td>
                 <p>Key code</p>
             </td>
@@ -346,6 +378,7 @@
 </div>
 
 <p id="result"></p>
+<img id="image_result" onerror="this.style.display='none'" style="border: 24px solid #000; border-radius: 32px;" src="img/screenshot.png" />
 
 </center>
 
