@@ -172,6 +172,32 @@
         xhttp.send(); 
     }
 
+    function onInstall() {
+        var filename = document.getElementById("install_filename").value;
+
+        localStorage.setItem("install_filename", filename);
+
+        result.style.color = "white";
+        result.innerHTML = `Installing '${filename}'...`;
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(data) {
+            if (this.readyState == 4) {
+                var result = document.getElementById("result");
+                var json = JSON.parse(this.responseText);
+                if (this.status == 200) {
+                    result.style.color = "#499c54";
+                    result.innerHTML = json.data;
+                } else {
+                    result.style.color = "red";
+                    result.innerHTML = "ERROR: " + json.error;
+                }
+            }
+        };
+        xhttp.open("POST", `/install?filename=${filename}`, true);
+        xhttp.send(); 
+    }
+
     function onStartActivity() {
         var activity = document.getElementById("start_activity_activity").value;
 
@@ -334,6 +360,17 @@
         </tr>
         <tr>
             <td>
+                <p>Install</p>
+            </td>
+            <td colspan="2">
+                <input id="install_filename" placeholder="/home/user/file.apk"></input>
+            </td>
+            <td>
+                <button onclick="onInstall()">INSTALL</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <p>Uninstall</p>
             </td>
             <td colspan="2">
@@ -367,7 +404,7 @@
                 <p>Text</p>
             </td>
             <td colspan="2">
-                <input id="text" placeholder="Place marker here to send key events" onkeydown="onText(event)"></input>
+                <input id="text" autocomplete="off" placeholder="Place marker here to send key events" onkeydown="onText(event)"></input>
             </td>
             <td>
                 <button onclick="onInputKeyEvent(4)">BACK</button>
@@ -393,11 +430,7 @@
     document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
     document.getElementById("clear_data_package").value = localStorage.getItem("clear_data_package");
     document.getElementById("uninstall_package").value = localStorage.getItem("uninstall_package");
-
-    document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
-    document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
-    document.getElementById("start_activity_activity").value = localStorage.getItem("start_activity_activity");
-
+    document.getElementById("install_filename").value = localStorage.getItem("install_filename");
 </script>
 
 </html>

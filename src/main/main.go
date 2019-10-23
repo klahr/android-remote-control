@@ -21,6 +21,7 @@ func (this RequestHandler) initialize() {
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("img/"))))
 	http.HandleFunc("/connect", this.connect)
 	http.HandleFunc("/clear_data", this.clearData)
+	http.HandleFunc("/install", this.install)
 	http.HandleFunc("/uninstall", this.uninstall)
 	http.HandleFunc("/input_key_event", this.inputKeyEvent)
 	http.HandleFunc("/set_tcp_mode", this.setTcpMode)
@@ -69,6 +70,39 @@ func (this RequestHandler) clearData(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("{\"error\":\"Failed to clear data.\"}"))
+	}
+}
+
+func (this RequestHandler) install(w http.ResponseWriter, r *http.Request) {
+	filename := r.URL.Query().Get("filename")
+
+	if filename == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"error\":\"missing 'filename'\"}"))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "adb", "install", "-r", "-t", filename)
+
+	result, err := cmd.Output()
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		if ctx.Err() == context.DeadlineExceeded {
+			w.Write([]byte("{\"error\":\"Invalid APK.\"}"))
+		} else {
+			w.Write([]byte("{\"error\":\"" + err.Error() + "\"}"))
+		}
+		return
+	}
+
+	if strings.Contains(string(result), "Success") {
+		w.Write([]byte("{\"data\":\"Installed successfully!\"}"))
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"error\":\"Failed to install APK.\"}"))
 	}
 }
 
