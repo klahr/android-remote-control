@@ -300,6 +300,27 @@
         }
     }
 
+    function onScreenshotClick(e) {
+        var x;
+        var y;
+        if (e.pageX || e.pageY) { 
+            x = e.pageX;
+            y = e.pageY;
+        }
+        else { 
+            x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+            y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+        } 
+
+        x -= document.getElementById("image_result").offsetLeft;
+        y -= document.getElementById("image_result").offsetTop;
+
+        // TODO Send "adb shell input tap x y"
+
+        document.getElementById("text").select();
+        onScreenshot();
+    }
+
 </script>
 
 <center>
@@ -415,7 +436,7 @@
 </div>
 
 <p id="result"></p>
-<img id="image_result" onerror="this.style.display='none'" style="border: 24px solid #000; border-radius: 32px;" src="img/screenshot.png" />
+<img id="image_result" onclick="onScreenshotClick(event)" onerror="this.style.display='none'" style="border: 24px solid #000; border-radius: 32px;" src="img/screenshot.png" />
 
 </center>
 
