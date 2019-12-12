@@ -268,10 +268,34 @@
                     result.style.color = "red";
                     result.innerHTML = "ERROR: " + json.error;
                 }
+                onScreenshot();
             }
         };
         xhttp.open("POST", `/input_key_event?key_code=${keyCode}`, true);
         xhttp.send(); 
+    }
+
+    function onInputTapEvent(x, y) {
+        result.style.color = "white";
+        result.innerHTML = "Sending tap (" + x + ", " + y + ") event...";
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(data) {
+            if (this.readyState == 4) {
+                var result = document.getElementById("result");
+                var json = JSON.parse(this.responseText);
+                if (this.status == 200) {
+                    result.style.color = "#499c54";
+                    result.innerHTML = json.data;
+                } else {
+                    result.style.color = "red";
+                    result.innerHTML = "ERROR: " + json.error;
+                }
+                onScreenshot();
+            }
+        };
+        xhttp.open("POST", `/input_tap_event?x=${x}&y=${y}`, true);
+        xhttp.send();
     }
 
     function onText(event) {
@@ -315,10 +339,9 @@
         x -= document.getElementById("image_result").offsetLeft;
         y -= document.getElementById("image_result").offsetTop;
 
-        // TODO Send "adb shell input tap x y"
+        onInputTapEvent(x, y);
 
         document.getElementById("text").select();
-        onScreenshot();
     }
 
 </script>

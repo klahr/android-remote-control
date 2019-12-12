@@ -24,6 +24,7 @@ func (this RequestHandler) initialize() {
 	http.HandleFunc("/install", this.install)
 	http.HandleFunc("/uninstall", this.uninstall)
 	http.HandleFunc("/input_key_event", this.inputKeyEvent)
+	http.HandleFunc("/input_tap_event", this.inputTapEvent)
 	http.HandleFunc("/set_tcp_mode", this.setTcpMode)
 	http.HandleFunc("/start", this.start)
 	http.HandleFunc("/screenshot", this.screenshot)
@@ -174,6 +175,31 @@ func (this RequestHandler) inputKeyEvent(w http.ResponseWriter, r *http.Request)
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("{\"error\":\"Invalid key code.\"}"))
+	}
+}
+
+func (this RequestHandler) inputTapEvent(w http.ResponseWriter, r *http.Request) {
+	x := r.URL.Query().Get("x")
+	y := r.URL.Query().Get("y")
+
+	if x == "" || y == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"error\":\"missing cursor coordinate\"}"))
+		return
+	}
+
+	result, err := exec.Command("adb", "shell", "input", "tap", x, y).Output()
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("{\"error\":\"" + err.Error() + "\"}"))
+		return
+	}
+
+	if len(string(result)) == 0 {
+		w.Write([]byte("{\"data\":\"Tap event sent!\"}"))
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("{\"error\":\"Tap event not supported.\"}"))
 	}
 }
 
